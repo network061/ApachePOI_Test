@@ -16,34 +16,12 @@ public class TdcsTask {
 		this.in = in;
 		lines = new LinkedList<String>();
 	}
-	public String[] doSearch(String[] keys,File[] files){
-		lines = new LinkedList<String>();
-		for(File file:files){
-			try {
-				in = new Scanner(new FileReader(file));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			while(in.hasNextLine()){
-				String temp = in.nextLine();
-				for(String key:keys){
-					if(temp.contains(key)){
-						lines.add(file.getName().replace(".txt","").concat("|"+temp));
-						break; //只要包含其中一个关键字则表示结果正确查找,退出循环进入下一条记录的比较
-					}
-				}
-			}
-		}
-		String[] result = new String[lines.size()];
-		return lines.toArray(result);
-	}
 	/**
 	 * 在所有文档docs中找出所有关键字keys
 	 * @param keys
 	 * @param docs
 	 */
-	public String[] doSearchV2(String[] keys,File[] docs){
+	public String[] doSearch(String[] keys,File[] docs){
 		lines = new LinkedList<String>();
 		for(File doc:docs){
 			try {
@@ -104,8 +82,6 @@ public class TdcsTask {
 	    }
 		return counter;
 	}
-	
-	
 	Scanner in;
 	LinkedList<String> lines;//用于存储文档字串行
 	String[] readStrings;//用于快速访问每行字串
