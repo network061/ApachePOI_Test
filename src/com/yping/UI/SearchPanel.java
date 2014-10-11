@@ -43,13 +43,13 @@ public class SearchPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String regex = ",|£¬| |\\s+";
+			String regex = ",|£¬| |\\s+|¡¡";
 			String[] keys= searchField.getText().toString().trim().split(regex);
 			TdcsTask task = new TdcsTask();
 			logger.info(Time.now()+" search:"+Arrays.toString(keys));
 			
 			String[] result = null;
-			result = task.doSearch(keys,data.listResultFiles());
+			result = task.doSearchV2(keys,data.listResultFiles());
 			searchLabel.setText("About " + result.length + " results.");
 			logger.info("About " + result.length + " results.");
 			if(result.length != 0){

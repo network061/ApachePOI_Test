@@ -71,6 +71,7 @@ public class TDCSMenuBar extends JMenuBar{
 			fc.setMultiSelectionEnabled(true);
 			fc.setAcceptAllFileFilterUsed(false);
 //			fc.setFileFilter(new ResultFileFilter());
+			updateDB.openConn();
 			int returnVal = fc.showOpenDialog(frame);
 			if(returnVal == JFileChooser.APPROVE_OPTION){
 				File[] selectedTxts = fc.getSelectedFiles();

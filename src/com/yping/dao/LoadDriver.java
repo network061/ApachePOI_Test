@@ -30,7 +30,7 @@ public class LoadDriver {
 			logger.info("[INFO]"+Time.now()+" ClassNotFoundExcetion:com.mysql.jdbc.Driver¿‡º”‘ÿ“Ï≥£");
 		}
 		
-		openConn();
+//		openConn();
 		
 	}
 	public void openConn(){

@@ -3,7 +3,6 @@ package com.yping.classes;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -16,10 +15,6 @@ public class TdcsTask {
 	public TdcsTask(Scanner in){
 		this.in = in;
 		lines = new LinkedList<String>();
-		
-		getData();
-		transformData();
-		
 	}
 	public String[] doSearch(String[] keys,File[] files){
 		lines = new LinkedList<String>();
@@ -44,46 +39,37 @@ public class TdcsTask {
 		return lines.toArray(result);
 	}
 	/**
-	 * 版本2更新:
-	 * 1.对每个关键字的查找结果使用数组保存,用CollectionUtil查找intersection
+	 * 在所有文档docs中找出所有关键字keys
 	 * @param keys
-	 * @param files
-	 * @return
+	 * @param docs
 	 */
-	public String[] doSearchV2(String[] keys,File[] files){
+	public String[] doSearchV2(String[] keys,File[] docs){
 		lines = new LinkedList<String>();
-		
-		for(File file:files){
-			
+		for(File doc:docs){
+			try {
+				in = new Scanner(new FileReader(doc));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			while(in.hasNextLine()){
+				String line = in.nextLine();
+				int counter =0;
+				for(String key:keys){
+					if(!line.contains(key)){
+						break; 
+					}
+					++ counter;
+				}
+				if(counter == keys.length){
+					lines.add(line);
+				}
+			}
 		}
 		String[] result = new String[lines.size()];
 		return lines.toArray(result);
 	}
-	/**
-	 * 判断某个文档中哪些行包含key
-	 * @param key
-	 * @param line
-	 * @return
-	 */
-	public LinkedList<String> contains(String[] keys,File aFile,PrintWriter output){
-		try {
-			in = new Scanner(new FileReader(aFile));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		while(in.hasNextLine()){
-			String temp = in.nextLine();
-			for(String key:keys){
-				if(temp.contains(key)){
-//					lines.add(aFile.getName().replace(".txt","").concat("|"+temp));
-					lines.add(temp.split("\\|")[0]);
-					break; //只要包含其中一个关键字则表示结果正确查找,退出循环进入下一条记录的比较
-				}
-			}
-		}
-		return null;
-	}
+	
 	public void getData(){
 		while(in.hasNextLine()){
 			lines.add(in.nextLine());
@@ -96,6 +82,8 @@ public class TdcsTask {
 		}
 	}
 	public String[] getWebData(){
+		getData();
+		transformData();
 		return readStrings;
 	}
 	/**
