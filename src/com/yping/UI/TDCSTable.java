@@ -5,7 +5,7 @@ import javax.swing.JTable;
 public class TDCSTable extends JTable {
 	
 	public TDCSTable() {		
-		title = new String[]{"文件名","描述","接收时间","处理过程","故障原因","备注"};
+		title = new String[]{"描述","接收时间","处理过程","故障原因","备注"};
 		tableModel = new SearchTableModel(title,new String[]{});
 		setModel(tableModel);
 	}
@@ -14,7 +14,8 @@ public class TDCSTable extends JTable {
 		setModel(new SearchTableModel(title,results));
 		setFillsViewportHeight(true);
 		textareaCell = new TextareaCellRenderer();
-		setTextAreaCellRenderer(new int[]{3});
+		
+		setTextAreaCellRenderer(new int[]{2});
 		repaint();
 	}
 

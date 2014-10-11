@@ -11,7 +11,7 @@ public class SearchTableModel extends AbstractTableModel {
 		this.tableData = data;
 		this.data = new String[rowCount][colCount];
 		
-		selectColumns(tableData,new int[]{0,4,5,6,7,10});	
+		selectColumns(tableData,new int[]{3,4,5,6,9});
 	}
 	/**
 	 * 对找到的每条记录的字段进行筛选

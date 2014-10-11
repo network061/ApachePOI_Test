@@ -49,7 +49,7 @@ public class SearchPanel extends JPanel {
 			logger.info(Time.now()+" search:"+Arrays.toString(keys));
 			
 			String[] result = null;
-			result = task.doSearchV2(keys,data.listResultFiles());
+			result = task.doSearch(keys,data.listResultFiles());
 			searchLabel.setText("About " + result.length + " results.");
 			logger.info("About " + result.length + " results.");
 			if(result.length != 0){

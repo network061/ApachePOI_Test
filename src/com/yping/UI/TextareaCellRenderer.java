@@ -22,6 +22,8 @@ public class TextareaCellRenderer extends JTextArea implements
 			table.setRowHeight(row,getPreferredSize().height);
 		}
 //		return new JScrollPane(this);
+		table.getColumnModel().getColumn(1).setPreferredWidth(4);
+		table.getColumnModel().getColumn(4).setPreferredWidth(2);
 		return this;
 	}
 
