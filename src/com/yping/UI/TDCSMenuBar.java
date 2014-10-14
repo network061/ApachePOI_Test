@@ -118,7 +118,6 @@ public class TDCSMenuBar extends JMenuBar{
 			e1.printStackTrace();
 		}
 		
-//		logPath = data.getLogPath().concat(aXls.getName().replace("xls","log"));
 		logPath = data.getLogPath()+"IterateOverLogger.xml";
 		String txtFileName = data.getDatasPath().concat(aXls.getName().replace("xls","txt"));
 		try {

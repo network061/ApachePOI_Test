@@ -13,18 +13,14 @@ public class TDCSTable extends JTable {
 	public void update(String[] results){
 		setModel(new SearchTableModel(title,results));
 		setFillsViewportHeight(true);
-		textareaCell = new TextareaCellRenderer();
 		
-		setTextAreaCellRenderer(new int[]{2});
+		/*默认的渲染器继承自JLabel,不利于多行显示,需要自定义继承JTextArea的渲染器
+		 *并重新设置表格的渲染器。
+		 */
+		setDefaultRenderer(Object.class,new TextareaCellRenderer());
 		repaint();
 	}
 
-	public void setTextAreaCellRenderer(int[] colIndexes){
-		for(int index:colIndexes){
-			getColumnModel().getColumn(index).setCellRenderer(textareaCell);
-		}
-	}
-	TextareaCellRenderer textareaCell;
 	String[] title;
 	SearchTableModel tableModel;
 }
