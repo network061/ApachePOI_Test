@@ -9,7 +9,7 @@ public class SwingConsole {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				SimpleGUI gui = new SimpleGUI();	
+				SearchFrame gui = new SearchFrame();	
 			}
 		});
 	}

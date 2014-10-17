@@ -28,6 +28,8 @@ public class TDCSMenuBar extends JMenuBar{
 		this.data = data;
 		this.words = words;
 		updateDB = new LoadDriver();
+		
+		addMenuItem();
 	}
 	public void addMenuItem(){
 		JMenu fileMenu = new JMenu("²»Á¼ÐÅÏ¢”µ“þ");
