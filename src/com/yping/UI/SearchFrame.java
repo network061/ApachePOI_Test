@@ -3,6 +3,8 @@ package com.yping.UI;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -49,6 +51,8 @@ public class SearchFrame extends JFrame {
 	
 	public void addComponents(){
 		searchField = new JTextField();
+		searchField.setFocusable(true);
+		searchField.addKeyListener(new searchKeyListener());
 		searchButton = new JButton("搜索不良信息");
 		searchButton.addActionListener(new searchAction());
 		searchLabel = new JLabel();
@@ -59,24 +63,41 @@ public class SearchFrame extends JFrame {
 		add(searchLabel,new GBC(3,0,1,1).setWeight(0,0));
 		add(new JScrollPane(tdcsTable),new GBC(0,1,4,4).setFill(GBC.BOTH).setWeight(100,100));
 	}
-	
+	public void search(){
+		String regex = ",|，| |\\s+|　";
+		String[] keys= searchField.getText().toString().trim().split(regex);
+		TdcsTask task = new TdcsTask();
+		logger.info(Time.now()+" search:"+Arrays.toString(keys));
+		
+		String[] result = null;
+		result = task.doSearch(keys,data.listResultFiles());
+		searchLabel.setText("About " + result.length + " results.");
+		logger.info("About " + result.length + " results.");
+		if(result.length != 0){
+			tdcsTable.update(result);
+		}	
+	}
 	class searchAction implements ActionListener {
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String regex = ",|，| |\\s+|　";
-			String[] keys= searchField.getText().toString().trim().split(regex);
-			TdcsTask task = new TdcsTask();
-			logger.info(Time.now()+" search:"+Arrays.toString(keys));
-			
-			String[] result = null;
-			result = task.doSearch(keys,data.listResultFiles());
-			searchLabel.setText("About " + result.length + " results.");
-			logger.info("About " + result.length + " results.");
-			if(result.length != 0){
-				tdcsTable.update(result);
-			}	
+			search();
 		}
+	}
+	class searchKeyListener implements KeyListener {
+		@Override
+		public void keyTyped(KeyEvent e) {}
+		@Override
+		public void keyPressed(KeyEvent e) {
+			//回车键按下后进行搜索
+			int keyCode = e.getKeyCode();
+			if(keyCode == KeyEvent.VK_ENTER){
+				System.out.println("enter...");
+				search();
+			}
+		}
+		@Override
+		public void keyReleased(KeyEvent e) {}
+		
 	}
 	TDCSTable tdcsTable;
     TDCSMenuBar menuBar;
