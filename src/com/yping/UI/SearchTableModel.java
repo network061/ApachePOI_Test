@@ -4,10 +4,10 @@ import javax.swing.table.AbstractTableModel;
 
 public class SearchTableModel extends AbstractTableModel {
 	
-	public SearchTableModel(String[] title,String[] data){
+	public SearchTableModel(String[] data){
 		this.rowCount = data.length;
-		this.colCount = title.length;
-		this.columnNames = title;
+		columnNames = new String[]{"描述","接收时间","处理过程","故障原因","备注"};
+		colCount = columnNames.length;
 		this.tableData = data;
 		this.data = new String[rowCount][colCount];
 		
