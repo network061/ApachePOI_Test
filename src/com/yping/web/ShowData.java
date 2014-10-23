@@ -1,19 +1,15 @@
 package com.yping.web;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import com.yping.classes.TdcsTask;
+import com.yping.util.ScanFile;
 
 public class ShowData extends HttpServlet{
 	private static Logger logger = Logger.getLogger("com.yping.web.ShowData");
@@ -55,8 +51,7 @@ public class ShowData extends HttpServlet{
 			selected = new int[]{1,2,3,4};
 		}
 				
-		TdcsTask analyze = null;
-		Scanner in = null;
+		ScanFile scan = null;
 		//通过servletContext读取result目录路径配置
 		ServletContext context = getServletContext();
 		String resultDir = context.getInitParameter(("XLS_RESULTS_DIRECTORY"));
@@ -66,19 +61,13 @@ public class ShowData extends HttpServlet{
 			fileName = aFile.getName();
 			
 			if(year.equals(fileName.substring(0,fileName.indexOf("年"))) && month.equals(fileName.substring(fileName.indexOf("年")+1,fileName.indexOf("月")))){
-				try {
-					in = new Scanner(new FileReader(aFile));
-				} catch (FileNotFoundException e) {
-					// 读取result目录下文件失败
-					e.printStackTrace();
-				}
-				analyze = new TdcsTask(in);
+				scan = new ScanFile(aFile);
 			}
 		}
-		if(null != analyze){
+		if(scan != null){
 			System.out.println("服务器端已读取选择年份数据: "+year+"年");
 			System.out.println("服务器端已读取选择月份数据: "+month+"月");
-			String[] lines = analyze.getWebData();
+			String[] lines = scan.scan();
 			req.setAttribute("year",year);
 			req.setAttribute("month",month);
 			req.setAttribute("selectedIndexes",selected);

@@ -139,20 +139,14 @@ public class TDCSMenuBar extends JMenuBar{
 	 * @param aTxt
 	 */
 	public void doDataScraping(File aTxt){
-		Scanner in = null;         //调用DataScraping对象readData方法参数一
 		String logPath = null;     //初始化DataScraping类的日志参数
 		DataScraping dataScraping = null;
 		String argu_year = null;
 		String argu_yearAndMonth = null;
 		String argu_path = null;
-		try {
-			in = new Scanner(new FileReader(aTxt));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		logPath = data.getLogPath()+"DataScrapingLogger.xml";
-		dataScraping = new DataScraping(in,logPath);
+		dataScraping = new DataScraping(aTxt,logPath);
 		try {
 			argu_year = aTxt.getName().substring(0,aTxt.getName().indexOf("年"));
 			argu_yearAndMonth = aTxt.getName().substring(0,aTxt.getName().indexOf("月")).replace("年","-");

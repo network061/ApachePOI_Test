@@ -91,7 +91,6 @@ public class SearchFrame extends JFrame {
 			//回车键按下后进行搜索
 			int keyCode = e.getKeyCode();
 			if(keyCode == KeyEvent.VK_ENTER){
-				System.out.println("enter...");
 				search();
 			}
 		}
