@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 /**
  * 优化每个测试类中读取xls文件的代码
+ * 方法listXXXFiles()表示获取XXX目录文件集合
+ * 方法getXXXPath()表示获取名为XXX的目录路径
  * @author Administrator
  *
  */
@@ -12,90 +14,79 @@ public class Files {
 	
 	public Files(){
 		settings = new Settings(SysConstants.SYS_PROPERTIES);
+		files = new LinkedList<File>();
 	}
 	
 	public File[] listFiles(String directory){
 		
 		return new File(directory).listFiles();
 	}
-	/**
-	 * 获取目录中所有电子表格文件对象
-	 * @return
-	 */
-	public File[] listXlsFiles(){
-		return listFiles(settings.getValue(SysConstants.XLS_FILES_DIRECTORY));
-	}
-	/**
-	 * 获取Datas目录文件
-	 * @return
-	 */
+
 	public File[] listDataFiles(){
-		return listFiles(getDatasPath());
+		return listFiles(getXlsDatasPath());
 	}
-	/**
-	 * 获取Result目录文件
-	 * @return 返回文件对象数组
-	 */
+	
 	public File[] listResultFiles(){
-		 File subDir = new File(settings.getValue(SysConstants.XLS_RESULTS_DIRECTORY));
-		 String[] dirNames = subDir.list();
-		 LinkedList<File> result_files = new LinkedList<File>();
-		 
-		 for(int i=0;i < dirNames.length;++i){
-			 File file = new File(subDir.getPath(),dirNames[i]);
-			 //目录判断,如果Result目录下包含其它文件,不会导致调用listFiles时nullPointException　
-			 if(file.isDirectory()){
-				 for(File aTXT:file.listFiles()){
-					 result_files.push(aTXT);
-				 }
-			 }
-		 }
-		 File[] fileArray = new File[result_files.size()];
-		return result_files.toArray(fileArray);	
+		return getAllFiles(new File(getResultPath()));
 	}
-	/**
-	 * 获取log4j日志文件目录
-	 * @return
-	 */
-	public String getLogPath(){
-		
+	public File[] listReportFiles(){
+		return getAllFiles(new File(getReportsPath()));
+	}
+	public String getLogPath(){	
 		return settings.getValue(SysConstants.DEBUG_LOGS_DIRECTORY);
 	}
 	public String getXlsPath(){
 		return settings.getValue(SysConstants.XLS_FILES_DIRECTORY);
 	}
-	/**
-	 * 返回txt文档的存放路径
-	 * @return
-	 */
-	public String getDatasPath(){
+	
+	public String getXlsDatasPath(){
 		return settings.getValue(SysConstants.XLS_DATAS_DIRECTORY);
 	}
-	/**
-	 * 返回result目录下指定年份子目录路径
-	 * @return
-	 */
-	public String getResultPath(String year){
-		return settings.getValue(SysConstants.XLS_RESULTS_DIRECTORY).concat(year+ "/");
+	public String getDocDataPath() {
+		return settings.getValue(SysConstants.DOC_DATAS_DIRECTORY);
 	}
 	public String getResultPath(){
 		return settings.getValue(SysConstants.XLS_RESULTS_DIRECTORY);
 	}
-	/**
-	 * 返回vocabularies.txt文档路径
-	 * @return
-	 */
-	public String getTermsDocPath() {
-		return settings.getValue(SysConstants.TERMS_DOC);
+	
+	public String getReportsPath(){
+		return settings.getValue(SysConstants.DOC_REPORTS_DIRECTORY);
+	}
+	public String getDocResultsPath() {
+		return settings.getValue(SysConstants.DOC_RESULTS_DIRECTORY);
 	}
 	/**
 	 * 返回vocabularies.txt文档对象
 	 * @return
 	 */
 	public File getTermsDoc(){
-		return new File(getTermsDocPath());
+		return new File(settings.getValue(SysConstants.TERMS_DOC));
 	}
-	Settings settings ;
 	
+	private void listAllFiles(File f){
+		if(f!=null){
+			if(f.isDirectory()){
+				File[] fileArray = f.listFiles();
+				if(fileArray.length != 0){
+					for(File file:fileArray){
+					    listAllFiles(file);	
+					}
+				}
+			}else{
+				files.add(f);
+			}
+		}
+	}
+	public File[] getAllFiles(File f){
+		listAllFiles(f);
+		if(!files.isEmpty()){
+			File[] results = new File[files.size()];
+			files.toArray(results);
+			return results;
+		}
+		return new File[]{};
+	}
+	LinkedList<File> files;
+	Settings settings ;
 	
 }

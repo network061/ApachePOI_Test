@@ -2,6 +2,7 @@
 package com.yping.classes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import org.apache.log4j.Logger;
@@ -16,30 +17,53 @@ import com.yping.util.Time;
  */
 public class DataScraping {
 	
-	public DataScraping(File aFile,String logPath ){
+	public DataScraping(File src,String logPath ){
 		DOMConfigurator.configure(logPath);
 		logger.info("[INFO]"+Time.now());
-		scan = new ScanFile(aFile);
+		this.src = src;
 		newRecords = new HashSet<String>();
+		setTimeField();
 	}
-	
-	public void readData(PrintWriter output, String argu_yearAndMonth){
-		String[] tokens = null;
-		int lineIndex = 0;
-		String[] lines = scan.scan();
-		for(String line:lines){
-			tokens = line.split("\\|");
-			if(tokens.length > 3 && !tokens[tokens.length-1].equals(" ") ){
-				if(newRecords.add(tokens[3])){
-					output.println(line.concat(argu_yearAndMonth + (++lineIndex)));
-					logger.info("Line ID:" + argu_yearAndMonth+lineIndex + "  Line Array Length:" + (tokens.length+1));
-				}
-			}		
+	public void setTimeField(){
+		if(src!=null){
+			String fileName =src.getName();
+			int  indexOfYear = fileName.indexOf("年");
+		    year = fileName.substring(0,indexOfYear);
+			month = fileName.substring(indexOfYear+1,fileName.indexOf("月"));
 		}
-		output.flush();
-		output.close();		
 	}
-	HashSet<String> newRecords;//过滤重复记录后的集合
+	public void output(String destination){
+		if(src!=null){
+			scan = new ScanFile(src);
+			String[] tokens = null;
+			int lineIndex = 0;
+			String[] lines = scan.scan();
+			destination = destination.concat(year+File.separator+src.getName());
+			PrintWriter output = null;
+			try {
+				output = new PrintWriter(destination);
+				for(String line:lines){
+					tokens = line.split("\\|");
+					if(tokens.length > 3 && !tokens[tokens.length-1].equals(" ") ){
+						if(newRecords.add(tokens[3])){
+							output.println(line.concat(year+"-"+month+"-" + (++lineIndex)));
+							logger.info("Line ID:" + year+"-"+month+"-"+lineIndex + "  Line Array Length:" + (tokens.length+1));
+						}
+					}		
+				}
+				output.flush();
+				output.close();	
+			} catch (FileNotFoundException e) {
+				logger.info("初始化文件输出对象异常:FileNotFoundException。");
+				logger.info("输出文件路径:"+destination);
+				e.printStackTrace();
+			}
+		}
+	}
+	File src;
+	HashSet<String> newRecords;//不良信息数据txt文档过滤重复记录后的集合
+	String year;
+	String month;
 	Time time;
 	ScanFile scan;
 	static Logger logger =Logger.getLogger("com.yping.classes.DataScraping");

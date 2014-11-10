@@ -1,164 +1,29 @@
 package com.yping.UI;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
-import java.util.Scanner;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import com.yping.classes.DataScraping;
-import com.yping.classes.IterateOver;
-import com.yping.dao.LoadDriver;
+import com.yping.UI.reports.ReportsMenu;
+import com.yping.UI.search.SearchMenu;
+import com.yping.UI.terms.TermsMenu;
+import com.yping.classes.InfoRetrieval;
 import com.yping.util.Files;
 
 
 public class TDCSMenuBar extends JMenuBar{
-	public TDCSMenuBar(JFrame frame,Files data,String[] words){	
-		this.frame = frame;
+	public TDCSMenuBar(Files data){	
 		this.data = data;
-		this.words = words;
-		updateDB = new LoadDriver();
+		IR = new InfoRetrieval(data.getTermsDoc(),data.listResultFiles());
+	    words = IR.getTerms();
 		
 		addMenuItem();
 	}
 	public void addMenuItem(){
-		JMenu fileMenu = new JMenu("²»Á¼ĞÅÏ¢”µ“ş");
-		
-		JMenuItem loadXlsItem = new JMenuItem("¼ÓİdëŠ×Ó±í¸ñ");   //¼ÓÔØµç×Ó±í¸ñÎÄ¼ş
-		JMenuItem insertDataItem = new JMenuItem("Èëì");
-		
-		loadXlsItem.addActionListener(new loadXlsAction());
-		insertDataItem.addActionListener(new insertAction());
-		
-		fileMenu.add(loadXlsItem);
-		fileMenu.addSeparator();
-		fileMenu.add(insertDataItem);
-		
-		add(fileMenu);
-		add(new TermsMenu("²»Á¼ĞÅÏ¢¹Ø¼ü×Ö",data.getTermsDocPath(),words));
-	}
-	class loadXlsAction implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(data.getXlsPath());
-			fc.setMultiSelectionEnabled(false);
-			fc.setAcceptAllFileFilterUsed(false);
-			fc.setFileFilter(new XlsFileFilter());
-			int returnVal = fc.showOpenDialog(frame);
-			if(returnVal == JFileChooser.APPROVE_OPTION){
-				File xlsFile = fc.getSelectedFile();
-				if(xlsFile != null){
-					doDataScraping(doIterator(xlsFile));
-				}
-			}
-		}
-		
-	}
-	class insertAction implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(data.getResultPath());
-			fc.setMultiSelectionEnabled(true);
-			fc.setAcceptAllFileFilterUsed(false);
-//			fc.setFileFilter(new ResultFileFilter());
-			updateDB.openConn();
-			int returnVal = fc.showOpenDialog(frame);
-			if(returnVal == JFileChooser.APPROVE_OPTION){
-				File[] selectedTxts = fc.getSelectedFiles();
-				for(File aTxt:selectedTxts){
-					
-					updateDB.insertRecords(doScan(aTxt));
-				}
-			}
-		}
-
-		private String[] doScan(File aTxt) {
-			Scanner in = null;
-			LinkedList<String> lines = new LinkedList<String>();
-			try {
-				in = new Scanner(new FileReader(aTxt));
-				while(in.hasNextLine()){
-					lines.add(in.nextLine());
-				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String[] linesArr = new String[lines.size()];
-			return lines.toArray(linesArr);
-		}
-		
+		add(new SearchMenu("æ¶“å¶ˆå£‡æ·‡â„ƒä¼…éç‰ˆåµ",data.getLogPath(),data.getXlsPath(),data.getXlsDatasPath(),
+				data.getResultPath()));
+		add(new TermsMenu("æ¶“å¶ˆå£‡æ·‡â„ƒä¼…éæŠ½æ•­ç€›ï¿½",data.getTermsDoc().getPath(),words));
+		add(new ReportsMenu("é’å—˜ç€½é¶ãƒ¥æ†¡",data.getReportsPath(),data.getLogPath()));
 	}
 	
-	/**
-	 * µ÷ÓÃIterateOverÀàµÄ·½·¨½«µç×Ó±í¸ñ½âÎöÎªtxtÎÄµµ¡£
-	 * @param aXls
-	 * @return ·µ»Ø½âÎöÍê³ÉµÄtxtÎÄµµ
-	 */
-	public File doIterator(File aXls) {
-		FileInputStream fileIn = null; //¸ù¾İxlsPath²ÎÊı¹¹ÔìFileInputStream¶ÔÏó
-		String logPath = null;		   //IterateOverÀà¹¹Ôì·½·¨²ÎÊı
-		PrintWriter output = null;     //Êı¾İÊä³öÎÄ¼şÂ·¾¶,IterateOver¶ÔÏówriteData·½·¨²ÎÊı
-		IterateOver iterate = null;  	
-		int[] colsIndex = null;
-		try {
-			fileIn = new FileInputStream(aXls.getPath());
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		logPath = data.getLogPath()+"IterateOverLogger.xml";
-		String txtFileName = data.getDatasPath().concat(aXls.getName().replace("xls","txt"));
-		try {
-			output = new PrintWriter(txtFileName);
-		} catch (IOException e) {
-			// TODO Èç¹ûÖ¸¶¨ÎÄ¼ş´æÔÚ£¬µ«ËüÊÇÒ»¸öÄ¿Â¼£¬¶ø²»ÊÇÒ»¸ö³£¹æÎÄ¼ş£»»òÕß¸ÃÎÄ¼ş²»´æÔÚ£¬µ«ÎŞ·¨´´½¨Ëü£»ÒÖ»òÒòÎªÆäËûÄ³Ğ©Ô­Òò¶øÎŞ·¨´ò¿ªËü
-			e.printStackTrace();
-		}
-
-		colsIndex = new int[] {1,2,3,4,5,6,8,12,13};
-		iterate = new IterateOver(fileIn,colsIndex,logPath);
-		iterate.writeData(output); 
-		return new File(txtFileName);
-	}
-	/**
-	 * ¶ÔtxtÎÄµµ½øĞĞÖØ¸´¼ÇÂ¼¹ıÂË,²¢´æ´¢ÓÚResultÄ¿Â¼ÏÂ¡£
-	 * @param aTxt
-	 */
-	public void doDataScraping(File aTxt){
-		String logPath = null;     //³õÊ¼»¯DataScrapingÀàµÄÈÕÖ¾²ÎÊı
-		DataScraping dataScraping = null;
-		String argu_year = null;
-		String argu_yearAndMonth = null;
-		String argu_path = null;
-		
-		logPath = data.getLogPath()+"DataScrapingLogger.xml";
-		dataScraping = new DataScraping(aTxt,logPath);
-		try {
-			argu_year = aTxt.getName().substring(0,aTxt.getName().indexOf("Äê"));
-			argu_yearAndMonth = aTxt.getName().substring(0,aTxt.getName().indexOf("ÔÂ")).replace("Äê","-");
-			argu_path = data.getResultPath(argu_year).concat(aTxt.getName());
-			dataScraping.readData(new PrintWriter(argu_path),argu_yearAndMonth+"-");
-		} catch (FileNotFoundException e) {
-			// TODO test.txt´´½¨Ê§°Ü
-			e.printStackTrace();
-		}
-	}
-	JFrame frame;
 	Files data;
-	LoadDriver updateDB;
-	String[] words; //JListÊı¾İ³õÊ¼»¯
+    InfoRetrieval IR;
+	String[] words; //JListé”Ÿæ–¤æ‹·è©é”Ÿç»ç¡·æ‹·é”Ÿï¿½
 }

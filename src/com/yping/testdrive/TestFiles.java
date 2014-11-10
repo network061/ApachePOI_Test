@@ -11,12 +11,11 @@ public class TestFiles {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-	  File subDir = new File("./results");
-	  for(String year:subDir.list()){
-		  File files = new File(subDir.getPath().concat(File.separator+ year));
-		  for(File file:files.listFiles()){
-			  System.out.println(file.getName());
-		  }
-	  }	}
+	  Files data = new Files();
+	  File[] files = data.getAllFiles(new File(data.getReportsPath()));
+	  for(File report:files){
+		  System.out.println(report.getPath());
+	  }
+	}
 	
 }
