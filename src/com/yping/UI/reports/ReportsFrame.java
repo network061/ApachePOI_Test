@@ -6,7 +6,6 @@ import java.io.File;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
@@ -37,28 +36,30 @@ public class ReportsFrame extends JFrame {
 	}
 	public void addComponents(){
 		//初始化各swing组件
-		editPane = new JEditorPane();
-		
-		parent = new DefaultMutableTreeNode("分析报告");
-		addNodes(new File(data.getReportsPath()),parent);
-		if(parent!=null){
-			tree = new JTree(parent);
-		}else{
-			tree = new JTree();
-		}
+		reportPane = new ReportsTextPane();
+		initTree();
 		
 		add(new JScrollPane(tree),new GBC(0,0,4,6).setFill(GBC.BOTH).setWeight(100,100));
-		add(new JScrollPane(editPane),new GBC(5,0).setFill(GBC.BOTH).setWeight(100,100));
+		add(new JScrollPane(reportPane),new GBC(5,0).setFill(GBC.BOTH).setWeight(100,100));
+	}
+	public void initTree(){
+		parent = new DefaultMutableTreeNode("Reports");
+		addNodes(new File(data.getReportsPath()),parent);
+		if(parent!=null){
+			tree = new ReportsTree(parent,data.getDocDataPath(),reportPane);
+		}else{
+			tree = new ReportsTree();
+		}
 	}
 	public void addNodes(File f,DefaultMutableTreeNode parent){
 		if(f != null){
-			logger.info("父亲结点--"+f.getName());
+			logger.info("parent node--"+f.getName());
 			File[] fileArray = f.listFiles();
 			if(fileArray != null){
 				for(File file:fileArray){
 					DefaultMutableTreeNode child = new DefaultMutableTreeNode(file.getName());
 					parent.add(child);
-					logger.info("增加结点--"+file.getName());
+					logger.info(" --child node "+file.getName());
 					if(f.isDirectory()){
 						addNodes(file,child);
 					}
@@ -68,7 +69,7 @@ public class ReportsFrame extends JFrame {
 	}
 	Files data;
 	DefaultMutableTreeNode parent;
-	JTree tree;
-	JEditorPane editPane;
+	ReportsTree tree;
+	ReportsTextPane reportPane;
 	static Logger logger =Logger.getLogger("com.yping.UI.ReportsFrame");
 }

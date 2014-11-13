@@ -23,3 +23,4 @@
 9.优化用户体验,对搜索输入框对象添加keyListener,回车后进行搜索。
 10.增加ScanFile类提供scan方法对文档进行扫描。减少重复代码:读取文档并扫描每行文本。
 11.增加JFrame,其中包含JTree显示分析报告文件列表、JEditPane显示分析报告内容。
+12.增加DocExtractor类解析word 2003文件,增加Report类将文本和图像数据通过序列化对象进行存储。

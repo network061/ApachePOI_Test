@@ -20,8 +20,8 @@ public class TestDOCExtractor {
 			
 			if(file.getName().contains(".doc")){
 				System.out.println(file.getName());
-				DOCExtractor docExtractor = new DOCExtractor(file.getPath(),dataPath.concat(file.getName().replace("doc","txt")),objStorePath,data.getLogPath()+"DOCExtractorLogger.xml");
-				docExtractor.output();
+				DOCExtractor docExtractor = new DOCExtractor(file.getPath(),dataPath.concat(file.getName()),objStorePath,data.getLogPath()+"DOCExtractorLogger.xml");
+				docExtractor.outputV2();
 			}
 		}
 	}

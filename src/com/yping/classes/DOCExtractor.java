@@ -7,7 +7,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.IIOException;
@@ -25,7 +27,7 @@ public class DOCExtractor {
 	public DOCExtractor(String fileName,String dataPath,String objStorePath,String logCfgPath){
 		DOMConfigurator.configure(logCfgPath);
 		this.fileName = fileName;
-		this.dataPath = dataPath;
+		this.dataPath = dataPath.replace(".doc",".dat");
 		this.objStorePath = objStorePath;
 		logger.info("[INFO]"+ Time.now()+"[Exact File]"+fileName);
 		try {
@@ -57,6 +59,54 @@ public class DOCExtractor {
 		Picture[] pics = new Picture[picturesList.size()];
 	    return picturesList.toArray(pics);
 	}
+	/**
+	 * Serialization
+	 */
+    public void outputV2(){
+		Picture[] pics = getPictures();
+		Report report = new Report();
+		ObjectOutputStream outStream = null;
+		try {
+			outStream = new ObjectOutputStream(new FileOutputStream(dataPath));
+		} catch (FileNotFoundException e1) {
+			logger.info("new ObjectOutputStream throw FileNotFoundException.",e1);
+		} catch (IOException e1) {
+			logger.info("new ObjectOutputStream throw IOException.",e1);
+		}
+		
+		if(report != null && outStream !=null){
+			logger.info("Data Output["+dataPath+"]");
+			report.setDocPath(fileName);
+			report.setText(getText());
+			int picsSize = pics.length;
+			BufferedImage[] images = new BufferedImage[picsSize];
+			ArrayList<BufferedImage> imageList = new ArrayList<BufferedImage>();
+			for(int i=0;i<picsSize;++i){
+		    	BufferedImage image = null;
+		    	try {
+					image = ImageIO.read(new ByteArrayInputStream(pics[i].getContent()));
+				}catch(IIOException e){
+					logger.info("Image["+i+"] new ByteArrayInputStream():IIOException Unsurpported Image type"+" Suggest Image Format:"+pics[i].suggestFileExtension(),e);
+				}catch (IOException e) {
+					logger.info("Image["+i+"] new ByteArrayInputStream():IOException Suggest Image Format:"+pics[i].suggestFileExtension(),e);
+				} 
+		    	if(image != null){
+		    		logger.info("Image["+i+"] ImageWidth:"+image.getWidth()+" ImageHeight:"+image.getHeight()+" Suggest Image Format:"+pics[i].suggestFileExtension());
+		    		imageList.add(image);
+		    	}else{
+		    		imageList.add(null);
+		    	}
+		    }
+			imageList.toArray(images);
+			//report.setImages(images);
+			try {
+				outStream.writeObject(report);
+				outStream.close();
+			} catch (IOException e) {
+				logger.info("ObjectOutputStream writeObject method throw IOException.",e);
+			}
+		}
+    }
 	public void output(){
 		PrintWriter output = null;
 		Picture[] pics = getPictures();

@@ -8,7 +8,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import com.yping.classes.DOCExtractor;
 import com.yping.util.TDCSFileFilter;
 
 public class ReportsMenu extends JMenu {
@@ -16,10 +15,10 @@ public class ReportsMenu extends JMenu {
 		super(menuTitle);
 		this.reportPath = reportPath;
 		this.logPath = logPath;
-		loadItem = new JMenuItem("加载");
+		loadItem = new JMenuItem("load doc/pdf file");
 		loadItem.addActionListener(new loadDocAction());
 		add(loadItem);
-		displayItem = new JMenuItem("查看");
+		displayItem = new JMenuItem("display report");
 		add(displayItem);
 		frame = new ReportsFrame();
 		displayItem.addActionListener(new displayAction());
