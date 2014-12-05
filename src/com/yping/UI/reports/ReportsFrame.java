@@ -3,9 +3,9 @@ package com.yping.UI.reports;
 import java.awt.GridBagLayout;
 import java.io.File;
 
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
@@ -38,15 +38,20 @@ public class ReportsFrame extends JFrame {
 		//初始化各swing组件
 		reportPane = new ReportsTextPane();
 		initTree();
+		JScrollPane  reportScrollPane = new JScrollPane(reportPane);
+		JScrollPane treeScrollPane = new JScrollPane(tree);
 		
-		add(new JScrollPane(tree),new GBC(0,0,4,6).setFill(GBC.BOTH).setWeight(100,100));
-		add(new JScrollPane(reportPane),new GBC(5,0).setFill(GBC.BOTH).setWeight(100,100));
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                reportScrollPane, treeScrollPane); 
+		splitPane.setOneTouchExpandable(true);
+	    splitPane.setDividerLocation(600);
+	    add(splitPane,new GBC(0,0).setFill(GBC.BOTH).setWeight(100,100));
 	}
 	public void initTree(){
 		parent = new DefaultMutableTreeNode("Reports");
 		addNodes(new File(data.getReportsPath()),parent);
 		if(parent!=null){
-			tree = new ReportsTree(parent,data.getDocDataPath(),reportPane);
+			tree = new ReportsTree(parent,data.getDocDataPath(),data.getPdfDataPath(),reportPane);
 		}else{
 			tree = new ReportsTree();
 		}

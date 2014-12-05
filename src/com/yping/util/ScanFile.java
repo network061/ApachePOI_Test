@@ -38,7 +38,7 @@ public class ScanFile {
 	  }
 	  return transToArr();
   }
-  public String[] transToArr(){
+  private String[] transToArr(){
 	  if(!lines.isEmpty()){
 		  results = new String[lines.size()];
 		  lines.toArray(results);

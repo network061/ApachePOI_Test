@@ -41,17 +41,16 @@ public class SearchMenu extends JMenu {
 		add(insertDataItem);
 	}
 	class loadXlsAction implements ActionListener{
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JFileChooser fc = new JFileChooser(xlsPath);
-			fc.setMultiSelectionEnabled(false);
+			fc.setMultiSelectionEnabled(true);
 			fc.setAcceptAllFileFilterUsed(false);
 			fc.setFileFilter(new TDCSFileFilter(".xls","Just EXCEL 2003"));
 			int returnVal = fc.showOpenDialog(null);
 			if(returnVal == JFileChooser.APPROVE_OPTION){
-				File xlsFile = fc.getSelectedFile();
-				if(xlsFile != null){
+				File[] xlsFiles = fc.getSelectedFiles();
+				for(File xlsFile:xlsFiles){
 					doDataScraping(doIterator(xlsFile));
 				}
 			}

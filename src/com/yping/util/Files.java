@@ -7,7 +7,7 @@ import java.util.LinkedList;
  * 优化每个测试类中读取xls文件的代码
  * 方法listXXXFiles()表示获取XXX目录文件集合
  * 方法getXXXPath()表示获取名为XXX的目录路径
- * @author Administrator
+ * @author 杨平
  *
  */
 public class Files {
@@ -17,8 +17,7 @@ public class Files {
 		files = new LinkedList<File>();
 	}
 	
-	public File[] listFiles(String directory){
-		
+	public File[] listFiles(String directory){	
 		return new File(directory).listFiles();
 	}
 
@@ -31,6 +30,9 @@ public class Files {
 	}
 	public File[] listReportFiles(){
 		return getAllFiles(new File(getReportsPath()));
+	}
+	public File[] listReportDatas(){
+		return getAllFiles(new File(getReportsDataPath()));
 	}
 	public String getLogPath(){	
 		return settings.getValue(SysConstants.DEBUG_LOGS_DIRECTORY);
@@ -45,12 +47,21 @@ public class Files {
 	public String getDocDataPath() {
 		return settings.getValue(SysConstants.DOC_DATAS_DIRECTORY);
 	}
+	public String getPdfDataPath() {
+		return settings.getValue(SysConstants.PDF_DATAS_DIRECTORY);
+	}
+	public String getDocImagesPath() {
+		return settings.getValue(SysConstants.DOC_IMAGES_DIRECTORY);
+	}
 	public String getResultPath(){
 		return settings.getValue(SysConstants.XLS_RESULTS_DIRECTORY);
 	}
 	
 	public String getReportsPath(){
 		return settings.getValue(SysConstants.DOC_REPORTS_DIRECTORY);
+	}
+	public String getReportsDataPath(){
+		return settings.getValue(SysConstants.DOC_DATAS_DIRECTORY);
 	}
 	public String getDocResultsPath() {
 		return settings.getValue(SysConstants.DOC_RESULTS_DIRECTORY);
@@ -88,5 +99,4 @@ public class Files {
 	}
 	LinkedList<File> files;
 	Settings settings ;
-	
 }

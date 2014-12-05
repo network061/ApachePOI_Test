@@ -12,9 +12,10 @@ public class ReportsTree extends JTree {
 	public ReportsTree(){
 		super();
 	}
-	public ReportsTree(DefaultMutableTreeNode rootNode,String dataPath,ReportsTextPane reportPane){
+	public ReportsTree(DefaultMutableTreeNode rootNode,String DocDatPath,String PdfDatPath,ReportsTextPane reportPane){
 		super(rootNode);
-		this.dataPath = dataPath;
+		this.DocDatPath = DocDatPath;
+		this.PdfDatPath = PdfDatPath;
 		this.reportPane = reportPane;
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		addTreeSelectionListener(new selectionAction());
@@ -25,17 +26,19 @@ public class ReportsTree extends JTree {
 		@Override
 		public void valueChanged(TreeSelectionEvent e) {
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)getLastSelectedPathComponent();
-			if(selectedNode != null && selectedNode.toString().contains(".doc")){
-				if(selectedNode.isLeaf()){
-					String path = dataPath.concat(selectedNode.toString().replace(".doc",".dat"));
-					System.out.println(path);
-					reportPane.removeCurrentDoc();
-					reportPane.displayDoc(path);
+			if(selectedNode != null && selectedNode.isLeaf() ){
+				String nodeName = selectedNode.toString();
+				reportPane.removeCurrentDoc();
+				if( nodeName.contains(".doc") ){
+					reportPane.displayReport( DocDatPath.concat(nodeName.replace(".doc",".dat")));
+				}else if(nodeName.contains(".pdf")){
+					reportPane.displayReport( PdfDatPath.concat(nodeName.replace(".pdf",".dat")));
 				}
 			}
 		}
 	}
-	private String dataPath ;
+	private String DocDatPath ; //doc dat file path
+	private String PdfDatPath ; //pdf dat file path
 	private ReportsTextPane reportPane;
 	static Logger logger =Logger.getLogger("com.yping.UI.ReportsTree");
 }

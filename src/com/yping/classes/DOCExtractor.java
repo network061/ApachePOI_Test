@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,20 +23,18 @@ import org.apache.poi.hwpf.usermodel.Picture;
 import com.yping.util.Time;
 
 public class DOCExtractor {
-	public DOCExtractor(String fileName,String dataPath,String objStorePath,String logCfgPath){
+	public DOCExtractor(File file,String destinationPath,String imagesSavePath,String logCfgPath){
 		DOMConfigurator.configure(logCfgPath);
-		this.fileName = fileName;
-		this.dataPath = dataPath.replace(".doc",".dat");
-		this.objStorePath = objStorePath;
-		logger.info("[INFO]"+ Time.now()+"[Exact File]"+fileName);
+		this.fileName = file.getName();
+		this.dataPath = destinationPath.replace(".doc",".dat");
+		dataPath_image = imagesSavePath.concat(file.getName().replace(".doc","")+File.separator);
+		logger.info("[INFO]"+ Time.now()+"[Exact File]"+file.getPath());
 		try {
-			wordDoc = new HWPFDocument(new FileInputStream(fileName));
+			wordDoc = new HWPFDocument(new FileInputStream(file.getPath()));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			logger.info("new FileInputStrem():FileNotFoundException.");
+			logger.info("new FileInputStrem():FileNotFoundException.",e);
 		} catch (IOException e) {
-			logger.info("IOException");
-			e.printStackTrace();
+			logger.info("IOException",e);
 		}
 	}
 	public String getText(){
@@ -54,15 +51,29 @@ public class DOCExtractor {
 		}
 		return articleStr.toString();
 	}
-	public Picture[] getPictures() {
+	private Picture[] getPictures() {
 		List<Picture> picturesList = wordDoc.getPicturesTable().getAllPictures();
 		Picture[] pics = new Picture[picturesList.size()];
 	    return picturesList.toArray(pics);
 	}
+	private void createImgFile(BufferedImage image,String imagePath){
+		try {
+			logger.info("Image save as "+imagePath);
+			ImageIO.write(image,"jpg",new File(imagePath));
+		} catch (IOException e) {
+			logger.info("ImageIO.write Image["+imagePath+"] throw IOException",e);
+		}
+	}
+	private void checkImgDir(String path){
+		File imgDir = new File(path);
+		if(!imgDir.exists()){
+			imgDir.mkdirs();
+		}
+	}
 	/**
 	 * Serialization
 	 */
-    public void outputV2(){
+    public void output(){
 		Picture[] pics = getPictures();
 		Report report = new Report();
 		ObjectOutputStream outStream = null;
@@ -79,8 +90,8 @@ public class DOCExtractor {
 			report.setDocPath(fileName);
 			report.setText(getText());
 			int picsSize = pics.length;
-			BufferedImage[] images = new BufferedImage[picsSize];
-			ArrayList<BufferedImage> imageList = new ArrayList<BufferedImage>();
+			String[] imageNames = new String[picsSize];
+			ArrayList<String> imageNamesList = new ArrayList<String>();
 			for(int i=0;i<picsSize;++i){
 		    	BufferedImage image = null;
 		    	try {
@@ -92,13 +103,15 @@ public class DOCExtractor {
 				} 
 		    	if(image != null){
 		    		logger.info("Image["+i+"] ImageWidth:"+image.getWidth()+" ImageHeight:"+image.getHeight()+" Suggest Image Format:"+pics[i].suggestFileExtension());
-		    		imageList.add(image);
+		    		imageNamesList.add(dataPath_image+"Image["+i+"]."+pics[i].suggestFileExtension());
+		    		checkImgDir(dataPath_image);
+		    		createImgFile(image,dataPath_image+"Image["+i+"]."+pics[i].suggestFileExtension());
 		    	}else{
-		    		imageList.add(null);
+		    		imageNamesList.add(dataPath_image+"unsupported image type.jpg");
 		    	}
 		    }
-			imageList.toArray(images);
-			//report.setImages(images);
+			imageNamesList.toArray(imageNames);
+			report.setImageNames(imageNames);
 			try {
 				outStream.writeObject(report);
 				outStream.close();
@@ -107,53 +120,9 @@ public class DOCExtractor {
 			}
 		}
     }
-	public void output(){
-		PrintWriter output = null;
-		Picture[] pics = getPictures();
-		try {
-			output = new PrintWriter(dataPath);
-		} catch (FileNotFoundException e) {
-			logger.info("new PrinterWriter(File f)[FileNotFoundException]",e);
-		}
-		if(output !=null){
-			logger.info("Data Output["+dataPath+"]");
-			output.print(fileName+"|"+getText()+"|"+pics.length+"|");
-			for(int i=0;i<pics.length;++i){
-		    	BufferedImage image = null;
-		    	try {
-					image = ImageIO.read(new ByteArrayInputStream(pics[i].getContent()));
-				}catch(IIOException e){
-					logger.info("Image["+i+"] new ByteArrayInputStream():IIOException Unsurpported Image type"+" Suggest Image Format:"+pics[i].suggestFileExtension(),e);
-					output.print("null"+"|");
-				}catch (IOException e) {
-					logger.info("Image["+i+"] new ByteArrayInputStream():IOException Suggest Image Format:"+pics[i].suggestFileExtension(),e);
-					output.print("null"+"|");
-				} 
-		    	if(image != null){
-		    		logger.info("Image["+i+"] ImageWidth:"+image.getWidth()+" ImageHeight:"+image.getHeight()+" Suggest Image Format:"+pics[i].suggestFileExtension());
-		    		File imgDir = new File(dataPath.replace(".txt",""));
-		    		if(!imgDir.exists()){
-		    			imgDir.mkdirs();
-		    		}
-		    		try {
-		    			String imgPath = imgDir.getPath().concat(File.separator+"Image"+i+".jpg");
-		    			logger.info("Image save as "+imgPath);
-						ImageIO.write(image,"jpg",new File(imgPath));
-						output.print("Image"+i+".jpg|");
-					} catch (IOException e) {
-						logger.info("ImageIO.write Image["+i+"] throw IOException",e);
-					}
-		    	}
-		    }
-		    output.println();
-		    output.flush();
-			output.close();
-		}
-		
-	}
 	HWPFDocument wordDoc;
 	String dataPath;      //data output path
-	String objStorePath; //data store path
+	String dataPath_image;//image output path     
 	String fileName;     // word file name
 	static Logger logger = Logger.getLogger("com.yping.classes.DOCExtractor");
 }

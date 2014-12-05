@@ -10,10 +10,11 @@ public class TestTask {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		TdcsTask task = new TdcsTask();
+		
 		Files data = new Files();
+		TdcsTask task = new TdcsTask(data.getLogPath().concat("TdcsTaskLogger.xml"));
 		String[] result = null;
-		result = task.doSearch(new String("¶«Ý¸").split("¡¡"),data.listResultFiles());
+		result = task.doSearchRecord(new String("¶«Ý¸").split("¡¡"),data.listResultFiles());
 		System.out.println("About " + result.length + " results.");
 		String[] result1 = result[0].split("\\|");
 		System.out.println(result1.length);

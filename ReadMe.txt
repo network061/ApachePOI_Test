@@ -23,4 +23,9 @@
 9.优化用户体验,对搜索输入框对象添加keyListener,回车后进行搜索。
 10.增加ScanFile类提供scan方法对文档进行扫描。减少重复代码:读取文档并扫描每行文本。
 11.增加JFrame,其中包含JTree显示分析报告文件列表、JEditPane显示分析报告内容。
-12.增加DocExtractor类解析word 2003文件,增加Report类将文本和图像数据通过序列化对象进行存储。
+12.增加DocExtractor类解析word 2003文件,增加Report类将文本数据通过序列化对象进行存储,由于BufferedImage类没有实现seriazable接口,故无法序列化,将word中的图片直接导出文件保存。
+13.增加PDFExtractor类解析pdf文件,考虑到厂家对部分pdf文件进行加密,直接使用PdfToImage直接把整个pdf文档导出成图片。(PDDocument类的isEncrypted()方法判断文档是否加密;
+ org.apache.pdfbox.util.PDFImageWriter类的writeImage()方法可将每页文档导出成图片)。
+14.实际只有24个pdf文档,其中厂家进行加密的只有3篇,先使用第三方软件进行解密,然后对pdf文档进行序列化存储。
+15.优化不良信息搜索结果,过滤重复记录,对要搜索的文档进行排序,从日期最新的文档开始搜索,然后用HashSet进行过滤。
+16.优化SearchTableModel对象初始化参数,复用JTable对pdf文档进行搜索。

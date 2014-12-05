@@ -1,13 +1,12 @@
 package com.yping.classes;
 
-import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 public class Report implements Serializable{
 	public Report(){
 		setDocPath("");
 		setText("");
-		setImages(new BufferedImage[]{});
+		setImageNames(new String[]{""});
 	}
 	public String getDocPath() {
 		return docPath;
@@ -21,13 +20,15 @@ public class Report implements Serializable{
 	public void setText(String text) {
 		this.text = text;
 	}
-	public BufferedImage[] getImages() {
-		return images;
+	
+	public String[] getImageNames() {
+		return imageNames;
 	}
-	public void setImages(BufferedImage[] images) {
-		this.images = images;
+	public void setImageNames(String[] imageNames) {
+		this.imageNames = imageNames;
 	}
+
 	private String docPath;
 	private String text;
-	private BufferedImage[] images;
+	private String[] imageNames;
 }

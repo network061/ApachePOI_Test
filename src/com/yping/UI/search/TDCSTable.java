@@ -7,12 +7,12 @@ import com.yping.UI.TextareaCellRenderer;
 public class TDCSTable extends JTable {
 	
 	public TDCSTable() {	
-		tableModel = new SearchTableModel(new String[]{});
+		tableModel = new SearchTableModel(new String[]{},new String[]{},new int[]{});
 		setModel(tableModel);
 	}
 
-	public void update(String[] results){
-		setModel(new SearchTableModel(results));
+	public void update(String[] title,String[] results,int [] selectedCols){
+		setModel(new SearchTableModel( title,results,selectedCols));
 		setFillsViewportHeight(true);
 		
 		/*默认的渲染器继承自JLabel,不利于多行显示,需要自定义继承JTextArea的渲染器

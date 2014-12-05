@@ -3,14 +3,19 @@ package com.yping.util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 public class Settings {
 
 	public Settings(String fileName){
-		FileInputStream file = null;
+		InputStreamReader file = null;
 		try {
-			file = new FileInputStream(fileName);
+			file = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

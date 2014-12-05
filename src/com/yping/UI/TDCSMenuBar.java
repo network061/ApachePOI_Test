@@ -17,10 +17,10 @@ public class TDCSMenuBar extends JMenuBar{
 		addMenuItem();
 	}
 	public void addMenuItem(){
-		add(new SearchMenu("TDCS excel data",data.getLogPath(),data.getXlsPath(),data.getXlsDatasPath(),
+		add(new SearchMenu("不良信息数据",data.getLogPath(),data.getXlsPath(),data.getXlsDatasPath(),
 				data.getResultPath()));
-		add(new TermsMenu("TDCS/CTC keyword",data.getTermsDoc().getPath(),words));
-		add(new ReportsMenu("Report doc/pdf",data.getReportsPath(),data.getLogPath()));
+		add(new TermsMenu("不良信息关键字",data.getTermsDoc().getPath(),words));
+		add(new ReportsMenu("分析报告数据",data.getReportsPath(),data.getDocDataPath(),data.getPdfDataPath(),data.getDocImagesPath(),data.getLogPath()));
 	}
 	
 	Files data;

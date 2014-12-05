@@ -1,6 +1,8 @@
 package com.yping.util;
 
 import java.io.File;
+import java.util.Arrays;
+
 import javax.swing.filechooser.*;
 
 public class TDCSFileFilter extends FileFilter {
@@ -11,8 +13,7 @@ public class TDCSFileFilter extends FileFilter {
 	
 	@Override
 	public boolean accept(File aFile) {
-		
-		if(aFile.isDirectory() || aFile.getName().endsWith(suffix)){
+		if(   aFile.isDirectory() || aFile.getName().endsWith(suffix)){
 			return true;
 		}
 		return false;
@@ -20,7 +21,6 @@ public class TDCSFileFilter extends FileFilter {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return description;
 	}
 	
